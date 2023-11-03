@@ -41,29 +41,64 @@ Available methods:
 
 ## Implementation notes
 
-To make the consent manager work just include a bundle of scripts into your index.html:
+To make the consent manager work you will need to include a bundle of scripts into your `index.html` file.
 
-1. To display a Privacy Manager window include these scripts:
+- Stub file(s)
+- Client configuration script
+- URL to messaging library
 
-```
+### Stub file(s)
+
+The first part implementation script(s) contains the IAB stub functions. The stub functions set up the IAB privacy string object `__uspapi` (U.S. Privacy) and/or `__tcfapi` (GDPR TCF). This makes it available on queue to be called and released when needed. It is important to have these script tags in the first position to avoid errors and failure of service.
+
+```javascript
+// GDPR TCF stub file. Example only. Please use stub file generated in Sourcepoint portal as it may have changed.
 <script type="text/javascript">
     function _typeof(t){return(_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}!function(){for(var t,e,o=[],n=window,r=n;r;){try{if(r.frames.__tcfapiLocator){t=r;break}}catch(t){}if(r===n.top)break;r=n.parent}t||(function t(){var e=n.document,o=!!n.frames.__tcfapiLocator;if(!o)if(e.body){var r=e.createElement("iframe");r.style.cssText="display:none",r.name="__tcfapiLocator",e.body.appendChild(r)}else setTimeout(t,5);return!o}(),n.__tcfapi=function(){for(var t=arguments.length,n=new Array(t),r=0;r<t;r++)n[r]=arguments[r];if(!n.length)return o;"setGdprApplies"===n[0]?n.length>3&&2===parseInt(n[1],10)&&"boolean"==typeof n[3]&&(e=n[3],"function"==typeof n[2]&&n[2]("set",!0)):"ping"===n[0]?"function"==typeof n[2]&&n[2]({gdprApplies:e,cmpLoaded:!1,cmpStatus:"stub"}):o.push(n)},n.addEventListener("message",(function(t){var e="string"==typeof t.data,o={};if(e)try{o=JSON.parse(t.data)}catch(t){}else o=t.data;var n="object"===_typeof(o)?o.__tcfapiCall:null;n&&window.__tcfapi(n.command,n.version,(function(o,r){var a={__tcfapiReturn:{returnValue:o,success:r,callId:n.callId}};t&&t.source&&t.source.postMessage&&t.source.postMessage(e?JSON.stringify(a):a,"*")}),n.parameter)}),!1))}();
 </script>
+```
+
+```javascript
+// US Privacy stub file. Example only. Please use stub file generated in Sourcepoint portal as it may have changed.
+<script>
+    (function () { var e = false; var c = window; var t = document; function r() { if (!c.frames["__uspapiLocator"]) { if (t.body) { var a = t.body; var e = t.createElement("iframe"); e.style.cssText = "display:none"; e.name = "__uspapiLocator"; a.appendChild(e) } else { setTimeout(r, 5) } } } r(); function p() { var a = arguments; __uspapi.a = __uspapi.a || []; if (!a.length) { return __uspapi.a } else if (a[0] === "ping") { a[2]({ gdprAppliesGlobally: e, cmpLoaded: false }, true) } else { __uspapi.a.push([].slice.apply(a)) } } function l(t) { var r = typeof t.data === "string"; try { var a = r ? JSON.parse(t.data) : t.data; if (a.__cmpCall) { var n = a.__cmpCall; c.__uspapi(n.command, n.parameter, function (a, e) { var c = { __cmpReturn: { returnValue: a, success: e, callId: n.callId } }; t.source.postMessage(r ? JSON.stringify(c) : c, "*") }) } } catch (a) { } } if (typeof __uspapi !== "function") { c.__uspapi = p; __uspapi.msgHandler = l; c.addEventListener("message", l, false) } })();
+</script>
+```
+
+### Client configuration script
+
+The client configuration script contains your organization's specific account configuration parameters. This configuration includes the necessary and optional parameters for your property to communicate with the Sourcepoint messaging platform and consent service libraries.
+
+> You will need to include the `gdpr` and/or `ccpa` object depending on which campaign you have enabled on the property.
+
+```javascript
 <script type="text/javascript">
   window._sp_queue = [];
   window._sp_ = {
       config: {
           accountId: 22,
           baseEndpoint: 'https://cdn.privacy-mgmt.com',
-          propertyHref: 'http://tizen.app.com',
-          gdpr: { }
+          propertyHref: 'http://tizenapp',
+          gdpr: { },
+          ccpa: { }
       }
 }
 </script>
+```
+
+### URL to messaging library
+
+The final script is a URL that points to Sourcepoint's messaging libraries. This script only needs to be included once regardless of how many different types of messaging campaigns you run on the property.
+
+```javascript
 <script src="https://cdn.privacy-mgmt.com/unified/wrapperMessagingWithoutDetection.js"></script>
 ```
 
-2. To get possibility navigate on the Privacy Manager include:
+> If your organization has edited the `baseEndpoint` with a CNAME DNS record you will also need to edit the URL. Please follow the following format if necessary: `https://cname.subdomain/unified/wrapperMessagingWithoutDetection.js`
+
+## Remote
+
+To get possibility navigate on the Privacy Manager include:
 
 ```
 <script type="application/javascript">
