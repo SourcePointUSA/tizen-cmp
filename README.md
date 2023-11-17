@@ -128,8 +128,11 @@ Load the OTT message on demand by [retrieving the OTT message ID](https://docs.s
 //GDPR
 window._sp_.gdpr.loadNativeOtt(GDPR_OTT_ID);
 
-//U.S. Privacy Legacy
+//U.S. Privacy (Legacy)
 window._sp_.ccpa.loadNativeOtt(USP_LEGACY_OTT_ID);
+
+//U.S. Multi-State Privacy
+window._sp_.usnat.loadNativeOtt(USNAT_OTT_ID);
 ```
 
 Attach the `loadNativeOtt` function to an event handler on your project. Most organizations who implement this function will attach it to `onclick` event of an element.
@@ -138,6 +141,9 @@ Attach the `loadNativeOtt` function to an event handler on your project. Most or
 //GDPR
 <button onclick="window._sp_.gdpr.loadNativeOtt(123456)">OTT GDPR</button>
 
-//U.S. Privacy Legacy
+//U.S. Privacy (Legacy)
 <button onclick="window._sp_.ccpa.loadNativeOtt(987654)">OTT USP Legacy</button>
+
+//U.S. Multi-State Privacy
+<button onclick="window._sp_.usnat.loadNativeOtt(543210)">OTT USP Legacy</button>
 ```
