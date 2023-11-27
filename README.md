@@ -49,7 +49,7 @@ To make the consent manager work you will need to include a bundle of scripts in
 
 ### Stub file(s)
 
-The first part implementation script(s) contains the IAB stub functions. The stub functions set up the IAB privacy string object `__tcfapi` (GDPR TCF), `__uspapi` (U.S. Privacy (Legacy)), and/or `__gpp` (U.S. Multi-State Privacy).
+The first part implementation script(s) contains the IAB stub functions. The stub functions set up the IAB privacy string object `__tcfapi` (GDPR TCF) or `__uspapi` (U.S. Privacy (Legacy)).
 
 This makes it available on queue to be called and released when needed. It is important to have these script tags in the first position to avoid errors and failure of service.
 
@@ -67,23 +67,15 @@ This makes it available on queue to be called and released when needed. It is im
 </script>
 ```
 
-```javascript
-// US Multi-State Privacy stub file. Example only. Please use stub file generated in Sourcepoint portal as it may have changed.
-<script>
-window.__gpp_addFrame=function(e){if(!window.frames[e])if(document.body){var t=document.createElement("iframe");t.style.cssText="display:none",t.name=e,document.body.appendChild(t)}else window.setTimeout(window.__gpp_addFrame,10,e)},window.__gpp_stub=function(){var e=arguments;if(__gpp.queue=__gpp.queue||[],__gpp.events=__gpp.events||[],!e.length||1==e.length&&"queue"==e[0])return __gpp.queue;if(1==e.length&&"events"==e[0])return __gpp.events;var t=e[0],p=e.length>1?e[1]:null,s=e.length>2?e[2]:null;if("ping"===t)p({gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}},!0);else if("addEventListener"===t){"lastId"in __gpp||(__gpp.lastId=0),__gpp.lastId++;var n=__gpp.lastId;__gpp.events.push({id:n,callback:p,parameter:s}),p({eventName:"listenerRegistered",listenerId:n,data:!0,pingData:{gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}}},!0)}else if("removeEventListener"===t){for(var a=!1,i=0;i<__gpp.events.length;i++)if(__gpp.events[i].id==s){__gpp.events.splice(i,1),a=!0;break}p({eventName:"listenerRemoved",listenerId:s,data:a,pingData:{gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}}},!0)}else"hasSection"===t?p(!1,!0):"getSection"===t||"getField"===t?p(null,!0):__gpp.queue.push([].slice.apply(e))},window.__gpp_msghandler=function(e){var t="string"==typeof e.data;try{var p=t?JSON.parse(e.data):e.data}catch(e){p=null}if("object"==typeof p&&null!==p&&"__gppCall"in p){var s=p.__gppCall;window.__gpp(s.command,(function(p,n){var a={__gppReturn:{returnValue:p,success:n,callId:s.callId}};e.source.postMessage(t?JSON.stringify(a):a,"*")}),"parameter"in s?s.parameter:null,"version"in s?s.version:"1.1")}},"__gpp"in window&&"function"==typeof window.__gpp||(window.__gpp=window.__gpp_stub,window.addEventListener("message",window.__gpp_msghandler,!1),window.__gpp_addFrame("__gppLocator"));
-</script>
-```
-
 ### Client configuration script
 
 The client configuration script contains your organization's specific account configuration parameters. This configuration includes the necessary and optional parameters for your property to communicate with the Sourcepoint messaging platform and consent service libraries.
 
-> You will need to include the `gdpr`, `ccpa`, and/or `usnat` object depending on which campaign you have enabled on the property.<br>
+> You will need to include the `gdpr` and/or `ccpa` object depending on which campaign you have enabled on the property.<br>
 > | **Object** | **Description** |
 > |------------|-----------------------------------------------------------------|
 > | `gdpr` | Used if your property runs a GDPR TCF or GDPR Standard campaign |
 > | `ccpa` | Used if your property runs a U.S. Privacy (Legacy) campaign |
-> | `usnat` | Used if your property runs a U.S. Multi-State Privacy campaign |
 
 ```javascript
 <script type="text/javascript">
@@ -94,7 +86,7 @@ The client configuration script contains your organization's specific account co
           baseEndpoint: 'https://cdn.privacy-mgmt.com',
           propertyHref: 'http://tizenapp',
           gdpr: { },
-          usnat: { }
+          ccpa: { }
       }
 }
 </script>
@@ -130,9 +122,6 @@ window._sp_.gdpr.loadNativeOtt(GDPR_OTT_ID);
 
 //U.S. Privacy (Legacy)
 window._sp_.ccpa.loadNativeOtt(USP_LEGACY_OTT_ID);
-
-//U.S. Multi-State Privacy
-window._sp_.usnat.loadNativeOtt(USNAT_OTT_ID);
 ```
 
 Attach the `loadNativeOtt` function to an event handler on your project. Most organizations who implement this function will attach it to `onclick` event of an element.
@@ -143,7 +132,57 @@ Attach the `loadNativeOtt` function to an event handler on your project. Most or
 
 //U.S. Privacy (Legacy)
 <button onclick="window._sp_.ccpa.loadNativeOtt(987654)">OTT USP Legacy</button>
+```
 
-//U.S. Multi-State Privacy
-<button onclick="window._sp_.usnat.loadNativeOtt(543210)">OTT USP Legacy</button>
+## Global Privacy Platform (GPP) Multi-State Privacy (MSPS) Support
+
+To enable the MSPS signal on your Tizen property that is currently utilizing the U.S. Privacy String, your organization will need to add the GPP stub file in addition to the U.S. Privacy - [CCPA stub](https://docs.sourcepoint.com/hc/en-us/articles/4405412395667#h_01FDD1S943DFHN9NMATFMRVFNH) stub file to `index.html`:
+
+```javascript
+//GPP stub file
+<script>
+window.__gpp_addFrame=function(e){if(!window.frames[e])if(document.body){var t=document.createElement("iframe");t.style.cssText="display:none",t.name=e,document.body.appendChild(t)}else window.setTimeout(window.__gpp_addFrame,10,e)},window.__gpp_stub=function(){var e=arguments;if(__gpp.queue=__gpp.queue||[],__gpp.events=__gpp.events||[],!e.length||1==e.length&&"queue"==e[0])return __gpp.queue;if(1==e.length&&"events"==e[0])return __gpp.events;var t=e[0],p=e.length>1?e[1]:null,s=e.length>2?e[2]:null;if("ping"===t)p({gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}},!0);else if("addEventListener"===t){"lastId"in __gpp||(__gpp.lastId=0),__gpp.lastId++;var n=__gpp.lastId;__gpp.events.push({id:n,callback:p,parameter:s}),p({eventName:"listenerRegistered",listenerId:n,data:!0,pingData:{gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}}},!0)}else if("removeEventListener"===t){for(var a=!1,i=0;i<__gpp.events.length;i++)if(__gpp.events[i].id==s){__gpp.events.splice(i,1),a=!0;break}p({eventName:"listenerRemoved",listenerId:s,data:a,pingData:{gppVersion:"1.1",cmpStatus:"stub",cmpDisplayStatus:"hidden",signalStatus:"not ready",supportedAPIs:["2:tcfeuv2","5:tcfcav1","6:uspv1","7:usnatv1","8:uscav1","9:usvav1","10:uscov1","11:usutv1","12:usctv1"],cmpId:0,sectionList:[],applicableSections:[],gppString:"",parsedSections:{}}},!0)}else"hasSection"===t?p(!1,!0):"getSection"===t||"getField"===t?p(null,!0):__gpp.queue.push([].slice.apply(e))},window.__gpp_msghandler=function(e){var t="string"==typeof e.data;try{var p=t?JSON.parse(e.data):e.data}catch(e){p=null}if("object"==typeof p&&null!==p&&"__gppCall"in p){var s=p.__gppCall;window.__gpp(s.command,(function(p,n){var a={__gppReturn:{returnValue:p,success:n,callId:s.callId}};e.source.postMessage(t?JSON.stringify(a):a,"*")}),"parameter"in s?s.parameter:null,"version"in s?s.version:"1.1")}},"__gpp"in window&&"function"==typeof window.__gpp||(window.__gpp=window.__gpp_stub,window.addEventListener("message",window.__gpp_msghandler,!1),window.__gpp_addFrame("__gppLocator"));
+</script>
+```
+
+Additionally, your organization will need to add the `includeGppApi` parameter to the `ccpa` object in your client configuration and set one of the following flag(s) depending on your organization's use case. [Click here](<https://github.com/SourcePointUSA/tizen-cmp/wiki/Global-Privacy-Platform-(GPP)-Multi%E2%80%90State-Privacy-(MSPS)>) for more information on each attribute, possible values, and examples for signatories and non-signatories of the MSPA.
+
+If `includeGppApi` is set to `true`, the following MSPA arguments will be set accordingly:
+
+- `MspaCoveredTransaction`: `"no"`
+- `MspaOptOutOptionMode`: `"na"`
+- `MspaServiceProviderMode`: `"na"`
+
+Example:
+
+```
+window._sp_queue = [];
+window._sp_ = {
+    config: {
+        accountId: 1584,
+        baseEndpoint: 'https://cdn.privacy-mgmt.com',
+        ccpa: {
+            includeGppApi: true
+        },
+        propertyHref: 'https://www.testdemo.com',
+
+```
+
+Optionally, your organization can customize support for the MSPS by configuring the MSPA attributes as part of the GPP config.
+
+```
+window._sp_queue = [];
+window._sp_ = {
+    config: {
+        accountId: 1584,
+        baseEndpoint: 'https://cdn.privacy-mgmt.com',
+        ccpa: {
+            includeGppApi: {
+                "MspaCoveredTransaction": "yes",
+                "MspaOptOutOptionMode": "yes",
+                "MspaServiceProviderMode": "no"
+            }
+        },
+        propertyHref: 'https://www.testdemo.com',
+
 ```
